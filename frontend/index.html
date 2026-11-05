@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SonicScope – Intelligent Audio Signal Analysis &amp; Processing Platform</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+
+  <!-- ── Header ────────────────────────────────────────────────────────── -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo-group">
+        <span class="logo-icon" aria-hidden="true">🎛️</span>
+        <div>
+          <h1 class="site-title">SonicScope</h1>
+          <p class="site-sub">Intelligent Audio Signal Analysis &amp; Processing Platform</p>
+        </div>
+      </div>
+      <div class="ibm-badge">Powered by IBM Granite 4.0 · watsonx.ai</div>
+    </div>
+  </header>
+
+  <!-- ── Navigation tabs ───────────────────────────────────────────────── -->
+  <nav class="tab-nav" role="tablist" aria-label="Application sections">
+    <button class="tab-btn active" role="tab" aria-selected="true"
+            data-tab="assistant" aria-controls="panel-assistant">
+      🤖 AI Assistant
+    </button>
+    <button class="tab-btn" role="tab" aria-selected="false"
+            data-tab="filter" aria-controls="panel-filter">
+      🔧 RC Filter Calculator
+    </button>
+    <button class="tab-btn" role="tab" aria-selected="false"
+            data-tab="noise" aria-controls="panel-noise">
+      🔇 Noise Troubleshooter
+    </button>
+  </nav>
+
+  <!-- ── Main content ───────────────────────────────────────────────────── -->
+  <main class="main-content">
+
+    <!-- Panel 1: AI Assistant -->
+    <section id="panel-assistant" class="tab-panel active" role="tabpanel">
+      <div class="panel-header">
+        <h2>AI Audio Engineering Assistant</h2>
+        <p class="panel-desc">
+          Ask anything about audio circuits — amplifiers, op-amps, filters, grounding,
+          noise, DSP, and more. Powered by IBM Granite via watsonx.ai.
+        </p>
+      </div>
+
+      <!-- Example questions -->
+      <div class="examples-row">
+        <span class="examples-label">Try:</span>
+        <button class="example-btn" data-q="Why is my audio amplifier producing noise?">Amp noise?</button>
+        <button class="example-btn" data-q="How do I reduce distortion in my op-amp circuit?">Op-amp distortion</button>
+        <button class="example-btn" data-q="Explain how a low-pass RC filter works">Low-pass filter</button>
+        <button class="example-btn" data-q="What grounding techniques reduce audio hum?">Grounding tips</button>
+        <button class="example-btn" data-q="How does a preamplifier circuit work?">Preamp basics</button>
+      </div>
+
+      <div class="chat-container">
+        <div id="chat-messages" class="chat-messages" aria-live="polite" aria-label="Chat conversation">
+          <div class="message assistant-message welcome-msg">
+            <div class="msg-avatar">AI</div>
+            <div class="msg-body">
+              <p>Hello! I'm <strong>SonicScope AI</strong>, your intelligent audio signal analysis assistant.</p>
+              <p>Ask me about amplifiers, filters, op-amps, grounding, noise reduction, DSP, or any audio circuit topic. I'm here to help you design, analyse, and troubleshoot audio circuits.</p>
+            </div>
+          </div>
+        </div>
+
+        <form id="chat-form" class="chat-input-row" novalidate>
+          <textarea
+            id="chat-input"
+            class="chat-textarea"
+            placeholder="Ask an audio engineering question…"
+            rows="2"
+            maxlength="2000"
+            aria-label="Your question"
+            required
+          ></textarea>
+          <button type="submit" id="chat-send-btn" class="btn btn-primary" aria-label="Send question">
+            Send
+          </button>
+        </form>
+        <p class="char-counter"><span id="char-count">0</span> / 2000</p>
+      </div>
+    </section>
+
+    <!-- Panel 2: RC Filter Calculator -->
+    <section id="panel-filter" class="tab-panel" role="tabpanel">
+      <div class="panel-header">
+        <h2>RC Filter Calculator</h2>
+        <p class="panel-desc">
+          Design a low-pass or high-pass RC filter. Enter your desired cutoff frequency
+          and one component value — the calculator will find the other.
+        </p>
+      </div>
+
+      <form id="filter-form" class="calc-form" novalidate>
+        <div class="form-grid">
+
+          <div class="form-group">
+            <label for="filter-type">Filter Type</label>
+            <select id="filter-type" class="form-control" required>
+              <option value="low_pass">Low-Pass Filter</option>
+              <option value="high_pass">High-Pass Filter</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="cutoff-freq">Cutoff Frequency (Hz)</label>
+            <input type="number" id="cutoff-freq" class="form-control"
+                   placeholder="e.g. 1000" min="0.01" step="any" required />
+            <small class="form-hint">The −3 dB point</small>
+          </div>
+
+          <div class="form-group">
+            <label for="resistance">Resistance (Ω)</label>
+            <input type="number" id="resistance" class="form-control"
+                   placeholder="e.g. 10000 (optional)" min="0.001" step="any" />
+            <small class="form-hint">Leave blank to calculate</small>
+          </div>
+
+          <div class="form-group">
+            <label for="capacitance">Capacitance (µF)</label>
+            <input type="number" id="capacitance" class="form-control"
+                   placeholder="e.g. 0.01 (optional)" min="0.0000001" step="any" />
+            <small class="form-hint">Leave blank to calculate</small>
+          </div>
+
+        </div>
+
+        <p id="filter-form-error" class="form-error hidden"></p>
+
+        <button type="submit" id="filter-submit-btn" class="btn btn-primary">Calculate Filter</button>
+      </form>
+
+      <div id="filter-result" class="result-card hidden" aria-live="polite">
+        <h3 class="result-title">Filter Calculation Result</h3>
+        <div id="filter-result-content"></div>
+      </div>
+
+      <!-- Formula reference -->
+      <div class="info-box">
+        <strong>Formula:</strong> f<sub>c</sub> = 1 / (2π × R × C)
+        <br/>
+        <strong>Low-Pass:</strong> passes signals <em>below</em> f<sub>c</sub>,
+        attenuates above. &nbsp;|&nbsp;
+        <strong>High-Pass:</strong> passes signals <em>above</em> f<sub>c</sub>,
+        attenuates below.
+      </div>
+    </section>
+
+    <!-- Panel 3: Noise Troubleshooter -->
+    <section id="panel-noise" class="tab-panel" role="tabpanel">
+      <div class="panel-header">
+        <h2>Audio Noise Troubleshooter</h2>
+        <p class="panel-desc">
+          Describe the audio problem you are experiencing and get a structured
+          diagnosis with causes, identification steps, and practical solutions.
+        </p>
+      </div>
+
+      <!-- Example problems -->
+      <div class="examples-row">
+        <span class="examples-label">Try:</span>
+        <button class="noise-example-btn" data-q="My speakers are producing a constant 50Hz hum">50 Hz hum</button>
+        <button class="noise-example-btn" data-q="There is a loud buzzing noise that gets worse near my phone">RF buzz</button>
+        <button class="noise-example-btn" data-q="My audio output is distorting and clipping at high volumes">Distortion</button>
+        <button class="noise-example-btn" data-q="There is constant hissing white noise in my preamp">Hiss</button>
+        <button class="noise-example-btn" data-q="I hear a loud pop when I turn on the amplifier">Power-on pop</button>
+      </div>
+
+      <form id="noise-form" class="calc-form" novalidate>
+        <div class="form-group">
+          <label for="noise-desc">Describe your audio problem</label>
+          <textarea
+            id="noise-desc"
+            class="form-control noise-textarea"
+            placeholder="e.g. There is a constant 50 Hz hum from my speakers. It gets louder when I plug in another device…"
+            rows="4"
+            maxlength="1000"
+            required
+          ></textarea>
+          <small class="form-hint">Describe the type of noise (hum, buzz, hiss, distortion, pop), when it occurs, and what equipment is involved.</small>
+        </div>
+
+        <p id="noise-form-error" class="form-error hidden"></p>
+
+        <button type="submit" id="noise-submit-btn" class="btn btn-primary">Diagnose Problem</button>
+      </form>
+
+      <div id="noise-result" class="result-card hidden" aria-live="polite">
+        <h3 class="result-title" id="noise-result-title"></h3>
+        <div id="noise-result-content"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ── Footer ────────────────────────────────────────────────────────── -->
+  <footer class="site-footer">
+    <p>
+      SonicScope &nbsp;·&nbsp; IBM SkillsBuild Problem Statement #32
+      &nbsp;·&nbsp; Powered by IBM Granite 4.0 &amp; watsonx.ai
+    </p>
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
